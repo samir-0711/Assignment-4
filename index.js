@@ -16,18 +16,21 @@ app.use(`${apiUrlVersion}`, product);
 
 app.use("/", (_, res) => res.send("Welcome to Assignment 4"));
 
-app.get("*", (_, res) => res.status(404).send("No such route exist"));
+const databaseConnectionString = process.env.MONGO_URL;
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  })
+  .connect(databaseConnectionString)
   .then(() => console.log("MongoDB Connected."))
   .catch((error) => console.log("Error in connecting MongoDB!", error));
+
+app.use((err, req, res, next) => {
+  res.status(err.status ? err.status : 500);
+  const message = err.status
+    ? err.message
+    : "Error occured while handling your request";
+  res.send(message);
+});
 
 // Starting Server
 const PORT = process.env.PORT || 5000;
