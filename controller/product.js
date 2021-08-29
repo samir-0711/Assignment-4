@@ -54,13 +54,13 @@ export const getAllProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    let { id, newProduct } = req.body;
+    let { id, ...updatedProduct } = req.body;
 
     if (!id) {
       return res.status(405).json({ message: "Id is Missing!" });
     }
 
-    const product = await Product.findOneAndUpdate({ id }, newProduct, {
+    const product = await Product.findOneAndUpdate({ id }, updatedProduct, {
       new: true,
     });
 
